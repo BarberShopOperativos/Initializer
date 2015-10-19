@@ -16,3 +16,20 @@
 	<stdio.h>
 	"BarberShopStructures.h"
 
+1445055648 source:/home/lcruz/Documents/BarberShop/Initializer/BarberShopStructures.c
+	"BarberShopStructures.h"
+
+1445055648 /home/lcruz/Documents/BarberShop/Initializer/BarberShopStructures.h
+	<stdlib.h>
+	<malloc.h>
+	<stdbool.h>
+	<pthread.h>
+
+1445055648 source:/home/lcruz/Documents/BarberShop/Initializer/main.c
+	<stdlib.h>
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/shm.h>
+	<stdio.h>
+	"BarberShopStructures.h"
+

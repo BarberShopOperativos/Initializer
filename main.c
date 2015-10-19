@@ -5,39 +5,49 @@
 #include <stdio.h>
 #include "BarberShopStructures.h"
 
-#define SHMSZ     50
+#define SHMSZ 50
 
 int main()
 {
+    // Declare values to store data in the segments
     int chairsShmID, barbersShmID, cashiershmID;
-    key_t _ChairsKey, _BarbersKey, _ChashierKey;
-    _ChairsKey = 5677;
-    _BarbersKey = 5678;
-    _ChashierKey = 5679;
+    key_t chairsKey, barbersKey, cashierKey;
+    chairsKey = 5677;
+    barbersKey = 5678;
+    cashierKey = 5679;
     int chairsQuantity, barbersQuantity;
+    Container *chairsQueue , *barbersList, *cashierQueue;
+
+    // Initialize structures data
+    chairsQueue = createContainer();
+    barbersList = createContainer();
+    cashierQueue = createContainer();
+
+    // Create the neccessary segments0
+    chairsShmID = createSegment(chairsKey);
+    barbersShmID = createSegment(barbersKey);
+    cashiershmID = createSegment(cashierKey);
+
+    // Attach the segment structures
+    attachSegment(chairsShmID,chairsQueue);
+    attachSegment(barbersShmID,barbersList);
+    attachSegment(cashiershmID,cashierQueue);
 
     printf("Amount of chairs: ");
     scanf("%d", &chairsQuantity);
-    Container *_ChairsQueue = createContainer();
-    _ChairsQueue->maxLenght = chairsQuantity;
+    chairsQueue->maxLenght = chairsQuantity;
 
     printf("Amount of barbers: ");
     scanf("%d", &barbersQuantity);
-    Container *_BarbersList = createContainer();
-    _BarbersList->maxLenght = barbersQuantity;
-    for(; barbersQuantity != 0; barbersQuantity--){
-        addNodeToListContainer(_BarbersList,0);
+    barbersList->maxLenght = barbersQuantity;
+
+    int nodeIndex;
+    for(nodeIndex = 0; nodeIndex < barbersQuantity; nodeIndex++){
+        addNodeToListContainer(barbersList,nodeIndex);
     }
 
-    Container *_ChashierQueue = createContainer();
-
-    chairsShmID = createSegment(_ChairsKey);
-    barbersShmID = createSegment(_BarbersKey);
-    cashiershmID = createSegment(_ChashierKey);
-
-    _ChairsQueue = attachSegment(chairsShmID,_ChairsQueue);
-    _BarbersList = attachSegment(barbersShmID,_BarbersList);
-    _ChashierQueue = attachSegment(cashiershmID,_ChashierQueue);
+    printf("Cantidad sillas: %d ... \n", chairsQueue->maxLenght);
+    printf("Cantidad barberos: %d ... \n", barbersList->maxLenght);
 
     exit(0);
     return 0;
@@ -46,17 +56,22 @@ int main()
 int createSegment(key_t pKey){
     int shmID;
     if ((shmID = shmget(pKey, SHMSZ, IPC_CREAT | 0666)) < 0) {
-        perror("shmget");
+        printf("Error creating segment with key: %d", pKey);
         exit(1);
     }
+    printf("Segment created ... \n");
+
     return shmID;
 }
-int attachSegment(int pShmID, Container * pContainer){
+
+void attachSegment(int pShmID, Container *pContainer){
+
     if ((pContainer = shmat(pShmID, NULL, 0)) == (Container *) -1) {
-        perror("shmat");
+        printf("Error attaching segment with key: %d",pShmID);
         exit(1);
     }
-    return pContainer;
+    printf("Segment attached ... \n");
+    return;
 }
 
 
