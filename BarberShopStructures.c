@@ -29,8 +29,10 @@ Container *createContainer()
 void addNodeToListContainer(Container *pContainer, int pId)
 {
     Node *node = createNode(pId);
+
     if (pContainer->firstNode == NULL)
     {
+        //printf("Debug %d \n", pId);
         pContainer->firstNode = pContainer->lastNode = node;
     }
     else
@@ -38,6 +40,8 @@ void addNodeToListContainer(Container *pContainer, int pId)
         pContainer->lastNode->next = node;
         pContainer->lastNode = node;
     }
+
+
     pContainer->length += 1;
 }
 

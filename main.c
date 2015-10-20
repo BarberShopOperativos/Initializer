@@ -5,10 +5,14 @@
 #include <stdio.h>
 #include "BarberShopStructures.h"
 
-#define SHMSZ 50
+#define SHMSZ 200
+
+Container *attachSegment(int pShmID);
+int createSegment(key_t pKey);
 
 int main()
 {
+
     // Declare values to store data in the segments
     int chairsShmID, barbersShmID, cashiershmID;
     key_t chairsKey, barbersKey, cashierKey;
@@ -23,15 +27,19 @@ int main()
     barbersList = createContainer();
     cashierQueue = createContainer();
 
-    // Create the neccessary segments0
+    // Create the neccessary segments
     chairsShmID = createSegment(chairsKey);
     barbersShmID = createSegment(barbersKey);
     cashiershmID = createSegment(cashierKey);
 
     // Attach the segment structures
-    attachSegment(chairsShmID,chairsQueue);
-    attachSegment(barbersShmID,barbersList);
-    attachSegment(cashiershmID,cashierQueue);
+    chairsQueue = attachSegment(chairsShmID);
+    barbersList = attachSegment(barbersShmID);
+    cashierQueue = attachSegment(cashiershmID);
+
+    chairsQueue->firstNode = chairsQueue->lastNode = NULL;
+    barbersList->firstNode = barbersList->lastNode = NULL;
+    cashierQueue->firstNode = cashierQueue->lastNode = NULL;
 
     printf("Amount of chairs: ");
     scanf("%d", &chairsQuantity);
@@ -51,9 +59,11 @@ int main()
 
     exit(0);
     return 0;
+
 }
 
-int createSegment(key_t pKey){
+int createSegment(key_t pKey) {
+
     int shmID;
     if ((shmID = shmget(pKey, SHMSZ, IPC_CREAT | 0666)) < 0) {
         printf("Error creating segment with key: %d", pKey);
@@ -64,14 +74,15 @@ int createSegment(key_t pKey){
     return shmID;
 }
 
-void attachSegment(int pShmID, Container *pContainer){
+Container *attachSegment(int pShmID){
 
-    if ((pContainer = shmat(pShmID, NULL, 0)) == (Container *) -1) {
+    Container *container;
+    if ((container = shmat(pShmID, NULL, 0)) == (Container *) -1) {
         printf("Error attaching segment with key: %d",pShmID);
         exit(1);
     }
     printf("Segment attached ... \n");
-    return;
+    return container;
 }
 
 

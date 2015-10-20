@@ -50,4 +50,12 @@ typedef struct Container
     int maxLenght;
 };
 
+Node *createNode (int pId);
+Container *createContainer();
+void addNodeToListContainer(Container *pContainer, int pId);
+void printListContainer(Container *pContainer);
+void addNodeToQueueContainer(Container *pContainer, int pId);
+void removeQueueContainerHead(Container *pContainer);
+void printQueueContainer(Container *pContainer);
+
 
