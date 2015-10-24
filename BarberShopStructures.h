@@ -13,7 +13,6 @@ typedef struct Client Client;
 typedef struct Node Node;
 typedef struct Container Container;
 
-
 /// <summary>
 /// Struct to handle the matrix threads
 /// </summary>

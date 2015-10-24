@@ -1,23 +1,37 @@
 #include <stdlib.h>
+#include <stdio.h>
 #include <sys/types.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
-#include <stdio.h>
+#include <sys/stat.h>
 #include "BarberShopStructures.h"
+#include "SemaphoreStruct.h"
 
-#define SHMSZ 50
+char CHAIRS_SEM[] = "ChairsSem";
+char BARBERS_SEM[] = "BarbersSem";
+char CASHIER_SEM[] = "CashierSem";
+char FILE_SEM[] = "FileSem";
+char S_CLIENTS_COUNTER_SEM[] = "SpecialClientsCounter";
 
-int createSegment(key_t pKey);
+
+int createSegment(key_t pKey, int pSegmentSize);
 Container *attachContainerSegment(int pShmID);
 int *attachIntSegment(int pShmID);
+void initializeSemaphores();
 
 int main()
 {
+
+    initializeSemaphores();
+
      // Declare values to store data in the segments
-    int chairsShmID, barbersShmID, cashiershmID, specialClientsCounterShmID, stopClientsShmID, stopSpecialClientesShmID;
+    int chairsShmID, barbersShmID, cashiershmID, specialClientsCounterShmID, stopClientsShmID, stopSpecialClientesShmID,
+        chairsQuantity, barbersQuantity,
+        *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr;
+    Container *chairsQueue , *barbersList, *cashierQueue;
     key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey, stopSpecialClientsKey;
 
-
+    // Segment keys to be used
     chairsKey = 5677;
     barbersKey = 5678;
     cashierKey = 5679;
@@ -25,22 +39,31 @@ int main()
     stopClientsKey = 5681;
     stopSpecialClientsKey = 5682;
 
-    int chairsQuantity, barbersQuantity;
-    int *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr;
-    Container *chairsQueue , *barbersList, *cashierQueue;
-
     // Initialize structures data
     chairsQueue = createContainer();
     barbersList = createContainer();
     cashierQueue = createContainer();
 
+
+    // Get the maximun amount of chairs
+    printf("Ingrese la cantidad de sillas: ");
+    scanf("%d", &chairsQuantity);
+
+    // Get the maximum amout of barbers
+    printf("Ingrese la cantidad de barberos: ");
+    scanf("%d", &barbersQuantity);
+
+    printf("Inicializando structuras ... \n");
+
     // Create the neccessary segments
-    chairsShmID = createSegment(chairsKey);
-    barbersShmID = createSegment(barbersKey);
-    cashiershmID = createSegment(cashierKey);
-    specialClientsCounterShmID = createSegment(specialClientsCounterKey);
-    stopClientsShmID = createSegment(stopClientsKey);
-    stopSpecialClientesShmID = createSegment(stopSpecialClientsKey);
+    chairsShmID = createSegment(chairsKey,chairsQuantity * 25);
+    barbersShmID = createSegment(barbersKey,barbersQuantity * 25);
+    cashiershmID = createSegment(cashierKey,25);
+    specialClientsCounterShmID = createSegment(specialClientsCounterKey,10);
+    stopClientsShmID = createSegment(stopClientsKey,10);
+    stopSpecialClientesShmID = createSegment(stopSpecialClientsKey,10);
+
+    printf("Creando segmentos ... \n");
 
     // Attach the segment structures
     chairsQueue = attachContainerSegment(chairsShmID);
@@ -50,64 +73,92 @@ int main()
     stopClientesPtr = attachIntSegment(stopClientsShmID);
     stopSpecialClientsPtr = attachIntSegment(stopSpecialClientesShmID);
 
+    printf("Asignando structuras a los segmentos ... \n");
+
+    // Set structures initial values
     chairsQueue->firstNode = chairsQueue->lastNode = NULL;
+    chairsQueue->maxLenght = chairsQuantity;
     barbersList->firstNode = barbersList->lastNode = NULL;
+    barbersList->maxLenght = barbersQuantity;
     cashierQueue->firstNode = cashierQueue->lastNode = NULL;
     *specialClientsCounterPtr = 0;
     *stopClientesPtr = 1;
     *stopSpecialClientsPtr = 1;
 
-    printf("Amount of chairs: ");
-    scanf("%d", &chairsQuantity);
-    chairsQueue->maxLenght = chairsQuantity;
-
-    printf("Amount of barbers: ");
-    scanf("%d", &barbersQuantity);
-    barbersList->maxLenght = barbersQuantity;
-
-    int nodeIndex;
-    for(nodeIndex = 0; nodeIndex < barbersQuantity; nodeIndex++){
-        addNodeToListContainer(barbersList,nodeIndex);
+    // Initialize the chairs queue spaces
+    int chairIndex;
+    for(chairIndex = 0; chairIndex < chairsQuantity; chairIndex++){
+        addNodeToQueueContainer(chairsQueue,chairIndex);
     }
 
-    printf("Cantidad sillas: %d \n", chairsQueue->maxLenght);
-    printf("Cantidad barberos: %d \n", barbersList->maxLenght);
+    // Initialize the barbers list spaces
+    int barberIndex;
+    for(barberIndex = 0; barberIndex < barbersQuantity; barberIndex++){
+        addNodeToListContainer(barbersList,barberIndex);
+    }
 
+    printf("Recursos inicializados exitosamente! \n");
     exit(0);
     return 0;
 }
 
-int createSegment(key_t pKey) {
+/// <summary>
+/// Creates a new shared memory segment
+/// </summary>
+int createSegment(key_t pKey, int pSegmentSize) {
 
     int shmID;
-    if ((shmID = shmget(pKey, SHMSZ, IPC_CREAT | 0666)) < 0) {
-        printf("Error creating segment with key: %d", pKey);
+    if ((shmID = shmget(pKey, pSegmentSize, IPC_CREAT | 0666)) < 0) {
+        printf("Error creando segmento con llave: %d \n", pKey);
         exit(1);
     }
-    printf("Segment created ... \n");
-
+    //printf("Segment created ... \n");
     return shmID;
 }
 
+/// <summary>
+/// Attaches a container struct to a segment
+/// </summary>
 Container *attachContainerSegment(int pShmID){
 
     Container *container;
     if ((container = shmat(pShmID, NULL, 0)) == (Container *) -1) {
-        printf("Error attaching segment with key: %d",pShmID);
+        printf("Error adjuntando segmento con llave: %d \n",pShmID);
         exit(1);
     }
-    printf("Segment attached ... \n");
+    //printf("Segment attached ... \n");
     return container;
 }
 
+/// <summary>
+/// Attaches an int value to a segment
+/// </summary>
 int *attachIntSegment(int pShmID){
 
     int *pointer;
     if ((pointer = shmat(pShmID, NULL, 0)) == (int *) -1) {
-        printf("Error attaching segment with key: %d",pShmID);
+        printf("Error adjuntando segmento con llave: %d \n",pShmID);
         exit(1);
     }
-    printf("Segment attached ... \n");
+    //printf("Segment attached ... \n");
     return pointer;
 }
+
+/// <summary>
+/// Initialize all the semphores to be used
+/// </summary>
+void initializeSemaphores()
+{
+    printf("Inicializando Semaforos... \n");
+
+    Semaphore *chairsSem = createSemaphore(CHAIRS_SEM);
+    Semaphore *barbersSem = createSemaphore(BARBERS_SEM);
+    Semaphore *cashierSem = createSemaphore(CASHIER_SEM);
+    Semaphore *fileSem = createSemaphore(FILE_SEM);
+    Semaphore *specialClientsCounterSem = createSemaphore(S_CLIENTS_COUNTER_SEM);
+
+    printf("Semaforos creados exitosamente! \n");
+}
+
+
 

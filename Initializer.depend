@@ -1,52 +1,33 @@
 # depslib dependency file v1.0
-1444762759 source:/home/christian/Documents/Initializer/BarberShopStructures.c
+1445400646 source:/home/luiscruz/Documents/BarberShopLocal/Initializer/BarberShopStructures.c
 	"BarberShopStructures.h"
 
-1444924979 /home/christian/Documents/Initializer/BarberShopStructures.h
+1445661046 /home/luiscruz/Documents/BarberShopLocal/Initializer/BarberShopStructures.h
 	<stdlib.h>
 	<malloc.h>
 	<stdbool.h>
 	<pthread.h>
 
-1444925316 source:/home/christian/Documents/Initializer/main.c
+1445708681 source:/home/luiscruz/Documents/BarberShopLocal/Initializer/main.c
 	<stdlib.h>
+	<stdio.h>
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/shm.h>
+	<sys/stat.h>
+	"BarberShopStructures.h"
+	"SemaphoreStruct.h"
+
+1445707081 /home/luiscruz/Documents/BarberShopLocal/Initializer/SemaphoreStruct.h
 	<sys/types.h>
 	<sys/ipc.h>
 	<sys/shm.h>
 	<stdio.h>
-	"BarberShopStructures.h"
-
-1445055648 source:/home/lcruz/Documents/BarberShop/Initializer/BarberShopStructures.c
-	"BarberShopStructures.h"
-
-1445055648 /home/lcruz/Documents/BarberShop/Initializer/BarberShopStructures.h
-	<stdlib.h>
-	<malloc.h>
-	<stdbool.h>
-	<pthread.h>
-
-1445055648 source:/home/lcruz/Documents/BarberShop/Initializer/main.c
-	<stdlib.h>
+	<semaphore.h>
 	<sys/types.h>
-	<sys/ipc.h>
-	<sys/shm.h>
-	<stdio.h>
-	"BarberShopStructures.h"
+	<sys/stat.h>
+	<fcntl.h>
 
-1445400646 source:/home/luiscruz/Documents/BarberShop/Initializer/BarberShopStructures.c
-	"BarberShopStructures.h"
-
-1445400646 /home/luiscruz/Documents/BarberShop/Initializer/BarberShopStructures.h
-	<stdlib.h>
-	<malloc.h>
-	<stdbool.h>
-	<pthread.h>
-
-1445400646 source:/home/luiscruz/Documents/BarberShop/Initializer/main.c
-	<stdlib.h>
-	<sys/types.h>
-	<sys/ipc.h>
-	<sys/shm.h>
-	<stdio.h>
-	"BarberShopStructures.h"
+1445708697 source:/home/luiscruz/Documents/BarberShopLocal/Initializer/SemaphoreStruct.c
+	"SemaphoreStruct.h"
 
