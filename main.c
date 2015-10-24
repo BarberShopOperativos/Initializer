@@ -7,6 +7,9 @@
 #include "BarberShopStructures.h"
 #include "SemaphoreStruct.h"
 
+#define INT_SEG_SIZE 5
+#define STRUCT_SEG_SIZE 10
+
 char CHAIRS_SEM[] = "ChairsSem";
 char BARBERS_SEM[] = "BarbersSem";
 char CASHIER_SEM[] = "CashierSem";
@@ -17,7 +20,10 @@ char S_CLIENTS_COUNTER_SEM[] = "SpecialClientsCounter";
 int createSegment(key_t pKey, int pSegmentSize);
 Container *attachContainerSegment(int pShmID);
 int *attachIntSegment(int pShmID);
+Node *attachNodeSegment(int pShmID);
 void initializeSemaphores();
+Node *addNodeToSharedQueueContainer(Container *pContainer, int pId, key_t pKey);
+Node *addNodeToSharedListContainer(Container *pContainer, int pId, key_t pKey);
 
 int main()
 {
@@ -26,11 +32,13 @@ int main()
 
      // Declare values to store data in the segments
     int chairsShmID, barbersShmID, cashiershmID, specialClientsCounterShmID, stopClientsShmID, stopSpecialClientesShmID,
-        chairsQuantityShmID, barbersQuantityShmID,
+        chairsQuantityShmID, barbersQuantityShmID, nodeShmID,
         chairsQuantity, barbersQuantity,
         *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr, *chairsQuantityPtr, *barbersQuantityPtr;
     Container *chairsQueue , *barbersList, *cashierQueue;
-    key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey, stopSpecialClientsKey,chairsQuantityKey,barbersQuantityKey;
+    key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey,
+        stopSpecialClientsKey,chairsQuantityKey,barbersQuantityKey,baseNodeKey;
+    Node *actualNode;
 
     // Segment keys to be used
     chairsKey = 5677;
@@ -56,17 +64,15 @@ int main()
     printf("Ingrese la cantidad de barberos: ");
     scanf("%d", &barbersQuantity);
 
-    printf("Structuras inicializadas... \n");
-
     // Create the neccessary segments
-    chairsShmID = createSegment(chairsKey,chairsQuantity * 25);
-    barbersShmID = createSegment(barbersKey,barbersQuantity * 25);
-    cashiershmID = createSegment(cashierKey,25);
-    specialClientsCounterShmID = createSegment(specialClientsCounterKey,10);
-    stopClientsShmID = createSegment(stopClientsKey,10);
-    stopSpecialClientesShmID = createSegment(stopSpecialClientsKey,10);
-    chairsQuantityShmID = createSegment(chairsQuantityKey,10);
-    barbersQuantityShmID = createSegment(barbersQuantityKey,10);
+    chairsShmID = createSegment(chairsKey,chairsQuantity * STRUCT_SEG_SIZE);
+    barbersShmID = createSegment(barbersKey,barbersQuantity * STRUCT_SEG_SIZE);
+    cashiershmID = createSegment(cashierKey,STRUCT_SEG_SIZE);
+    specialClientsCounterShmID = createSegment(specialClientsCounterKey,INT_SEG_SIZE);
+    stopClientsShmID = createSegment(stopClientsKey,INT_SEG_SIZE);
+    stopSpecialClientesShmID = createSegment(stopSpecialClientsKey,INT_SEG_SIZE);
+    chairsQuantityShmID = createSegment(chairsQuantityKey,INT_SEG_SIZE);
+    barbersQuantityShmID = createSegment(barbersQuantityKey,INT_SEG_SIZE);
 
     printf("Segmentos creados ... \n");
 
@@ -95,16 +101,24 @@ int main()
     *barbersQuantityPtr = barbersQuantity;
 
     // Initialize the chairs queue spaces
+
+    baseNodeKey = barbersQuantityKey;
     int chairIndex;
-    for(chairIndex = 0; chairIndex < chairsQuantity; chairIndex++){
-        addNodeToQueueContainer(chairsQueue,chairIndex);
+    for(chairIndex = 0; chairIndex < chairsQuantity; chairIndex++)
+    {
+        baseNodeKey += 1;
+        actualNode = addNodeToSharedQueueContainer(chairsQueue,chairIndex,baseNodeKey);
     }
 
     // Initialize the barbers list spaces
     int barberIndex;
-    for(barberIndex = 0; barberIndex < barbersQuantity; barberIndex++){
-        addNodeToListContainer(barbersList,barberIndex);
+    for(barberIndex = 0; barberIndex < barbersQuantity; barberIndex++)
+    {
+        baseNodeKey += 1;
+        actualNode = addNodeToSharedListContainer(barbersList,barberIndex,baseNodeKey);
     }
+
+    printf("Structuras inicializadas... \n");
 
     printf("Recursos inicializados exitosamente! \n");
     exit(0);
@@ -154,19 +168,83 @@ int *attachIntSegment(int pShmID){
 }
 
 /// <summary>
+/// Attaches a node struct to a segment
+/// </summary>
+Node *attachNodeSegment(int pShmID)
+{
+
+    Node *node;
+    if ((node = shmat(pShmID, NULL, 0)) == (Node *) -1) {
+        printf("Error adjuntando segmento con llave: %d \n",pShmID);
+        exit(1);
+    }
+    //printf("Segment attached ... \n");
+    return node;
+}
+
+/// <summary>
 /// Initialize all the semphores to be used
 /// </summary>
 void initializeSemaphores()
 {
     printf("Inicializando Semaforos... \n");
 
-    Semaphore *chairsSem = createSemaphore(CHAIRS_SEM);
-    Semaphore *barbersSem = createSemaphore(BARBERS_SEM);
-    Semaphore *cashierSem = createSemaphore(CASHIER_SEM);
-    Semaphore *fileSem = createSemaphore(FILE_SEM);
-    Semaphore *specialClientsCounterSem = createSemaphore(S_CLIENTS_COUNTER_SEM);
+    createSemaphore(CHAIRS_SEM);
+    createSemaphore(BARBERS_SEM);
+    createSemaphore(CASHIER_SEM);
+    createSemaphore(FILE_SEM);
+    createSemaphore(S_CLIENTS_COUNTER_SEM);
 
     printf("Semaforos creados exitosamente! \n");
+}
+
+/// <summary>
+/// Struct method to add a node to a shared queue container
+/// </summary>
+Node *addNodeToSharedQueueContainer(Container *pContainer, int pId, key_t pKey)
+{
+    Node *node = createNode(pId);
+    int nodeShmID = createSegment(pKey,STRUCT_SEG_SIZE);
+    node = attachNodeSegment(nodeShmID);
+    node->id = pId;
+
+    if (pContainer->firstNode == NULL)
+    {
+        pContainer->firstNode = pContainer->lastNode = node;
+    }
+    else
+    {
+        pContainer->firstNode->before = node;
+        node->next = pContainer->firstNode;
+        pContainer->firstNode = node;
+    }
+    pContainer->length += 1;
+    return node;
+}
+
+/// <summary>
+/// Struct method to add a node to a shared queue container
+/// </summary>
+Node *addNodeToSharedListContainer(Container *pContainer, int pId, key_t pKey)
+{
+    Node *node = createNode(pId);
+    int nodeShmID = createSegment(pKey,STRUCT_SEG_SIZE);
+    node = attachNodeSegment(nodeShmID);
+    node->id = pId;
+
+    if (pContainer->firstNode == NULL)
+    {
+        pContainer->firstNode = pContainer->lastNode = node;
+    }
+    else
+    {
+        pContainer->firstNode->before = node;
+        node->next = pContainer->firstNode;
+        pContainer->firstNode = node;
+    }
+
+    pContainer->length += 1;
+    return node;
 }
 
 
