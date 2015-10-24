@@ -26,10 +26,11 @@ int main()
 
      // Declare values to store data in the segments
     int chairsShmID, barbersShmID, cashiershmID, specialClientsCounterShmID, stopClientsShmID, stopSpecialClientesShmID,
+        chairsQuantityShmID, barbersQuantityShmID,
         chairsQuantity, barbersQuantity,
-        *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr;
+        *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr, *chairsQuantityPtr, *barbersQuantityPtr;
     Container *chairsQueue , *barbersList, *cashierQueue;
-    key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey, stopSpecialClientsKey;
+    key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey, stopSpecialClientsKey,chairsQuantityKey,barbersQuantityKey;
 
     // Segment keys to be used
     chairsKey = 5677;
@@ -38,6 +39,8 @@ int main()
     specialClientsCounterKey = 5680;
     stopClientsKey = 5681;
     stopSpecialClientsKey = 5682;
+    chairsQuantityKey = 5683;
+    barbersQuantityKey = 5684;
 
     // Initialize structures data
     chairsQueue = createContainer();
@@ -53,7 +56,7 @@ int main()
     printf("Ingrese la cantidad de barberos: ");
     scanf("%d", &barbersQuantity);
 
-    printf("Inicializando structuras ... \n");
+    printf("Structuras inicializadas... \n");
 
     // Create the neccessary segments
     chairsShmID = createSegment(chairsKey,chairsQuantity * 25);
@@ -62,8 +65,10 @@ int main()
     specialClientsCounterShmID = createSegment(specialClientsCounterKey,10);
     stopClientsShmID = createSegment(stopClientsKey,10);
     stopSpecialClientesShmID = createSegment(stopSpecialClientsKey,10);
+    chairsQuantityShmID = createSegment(chairsQuantityKey,10);
+    barbersQuantityShmID = createSegment(barbersQuantityKey,10);
 
-    printf("Creando segmentos ... \n");
+    printf("Segmentos creados ... \n");
 
     // Attach the segment structures
     chairsQueue = attachContainerSegment(chairsShmID);
@@ -72,8 +77,10 @@ int main()
     specialClientsCounterPtr = attachIntSegment(specialClientsCounterShmID);
     stopClientesPtr = attachIntSegment(stopClientsShmID);
     stopSpecialClientsPtr = attachIntSegment(stopSpecialClientesShmID);
+    chairsQuantityPtr = attachIntSegment(chairsQuantityShmID);
+    barbersQuantityPtr = attachIntSegment(barbersQuantityShmID);
 
-    printf("Asignando structuras a los segmentos ... \n");
+    printf("Estructuras asignadas a los segmentos ... \n");
 
     // Set structures initial values
     chairsQueue->firstNode = chairsQueue->lastNode = NULL;
@@ -84,6 +91,8 @@ int main()
     *specialClientsCounterPtr = 0;
     *stopClientesPtr = 1;
     *stopSpecialClientsPtr = 1;
+    *chairsQuantityPtr = chairsQuantity;
+    *barbersQuantityPtr = barbersQuantity;
 
     // Initialize the chairs queue spaces
     int chairIndex;
