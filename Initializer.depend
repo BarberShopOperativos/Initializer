@@ -31,3 +31,35 @@
 1445708697 source:/home/luiscruz/Documents/BarberShopLocal/Initializer/SemaphoreStruct.c
 	"SemaphoreStruct.h"
 
+1445400646 source:/home/luiscruz/Documents/BarberShop/Initializer/BarberShopStructures.c
+	"BarberShopStructures.h"
+
+1445661046 /home/luiscruz/Documents/BarberShop/Initializer/BarberShopStructures.h
+	<stdlib.h>
+	<malloc.h>
+	<stdbool.h>
+	<pthread.h>
+
+1445708681 source:/home/luiscruz/Documents/BarberShop/Initializer/main.c
+	<stdlib.h>
+	<stdio.h>
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/shm.h>
+	<sys/stat.h>
+	"BarberShopStructures.h"
+	"SemaphoreStruct.h"
+
+1445707081 /home/luiscruz/Documents/BarberShop/Initializer/SemaphoreStruct.h
+	<sys/types.h>
+	<sys/ipc.h>
+	<sys/shm.h>
+	<stdio.h>
+	<semaphore.h>
+	<sys/types.h>
+	<sys/stat.h>
+	<fcntl.h>
+
+1445708717 source:/home/luiscruz/Documents/BarberShop/Initializer/SemaphoreStruct.c
+	"SemaphoreStruct.h"
+

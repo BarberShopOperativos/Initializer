@@ -17,7 +17,7 @@ Semaphore *createSemaphore (char *pName)
         exit(-1);
     }
 
-    printf("Semaforo %s creado... \n", semaphore->name);
+    printf("Semaforo %s creado... \n", pName);
 
     return semaphore;
 }

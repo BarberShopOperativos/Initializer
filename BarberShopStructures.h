@@ -1,22 +1,23 @@
 #ifndef BARBERSHOPSTRUCTURES_H_INCLUDED
 #define BARBERSHOPSTRUCTURES_H_INCLUDED
-
 #endif // BARBERSHOPSTRUCTURES_H_INCLUDED
-
 #include <stdlib.h>
 #include <malloc.h>
 #include <stdbool.h>
 #include <pthread.h>
+#include <unistd.h>
 
 // Struct declaration
-typedef struct Client Client;
+typedef struct ClientThread ClientThread;
+typedef struct ClientThreadList ClientThreadList;
 typedef struct Node Node;
 typedef struct Container Container;
+
 
 /// <summary>
 /// Struct to handle the matrix threads
 /// </summary>
-struct Client
+struct ClientThread
 {
     int id;
     bool isActive;
@@ -24,19 +25,22 @@ struct Client
     bool isInChairsQueue;
     bool isInBarbersList;
     bool isInCashierQueue;
-    Node *actualNode;
     pthread_t thread;
+    Node *actualNode;
+    ClientThread *nextClient;
+    Container *chairsQueue;
+    Container *barbersList;
+    Container *cashiersQueue;
 };
 
 /// <summary>
-/// Struct to handle queue nodes
+/// Struct to handle queue or list to be used
 /// </summary>
-typedef struct Node
+typedef struct ClientThreadList
 {
-    int id;
-    bool isOcupied;
-    struct Node *next, *before;
-    Client *actualClient;
+    struct ClientThread *first, *last;
+    int length;
+    int maxLenght;
 };
 
 /// <summary>
@@ -49,6 +53,24 @@ typedef struct Container
     int maxLenght;
 };
 
+
+/// <summary>
+/// Struct to handle queue nodes
+/// </summary>
+typedef struct Node
+{
+    int id;
+    bool isOcupied;
+    struct Node *next, *before;
+    ClientThread *actualClient;
+};
+
+void *threadRun(void * threadArg);
+ClientThread *createClient (int pId, bool pHasPriority,
+    Node *pActualNode, ClientThreadList *pList, Container *pChairsQueue,
+    Container *pBarbersList,Container *pCashiersQueue);
+ClientThreadList *createClientTreadList();
+void addNodeToClientThreadList(ClientThreadList *pList, ClientThread *pClient);
 Node *createNode (int pId);
 Container *createContainer();
 void addNodeToListContainer(Container *pContainer, int pId);
@@ -56,5 +78,7 @@ void printListContainer(Container *pContainer);
 void addNodeToQueueContainer(Container *pContainer, int pId);
 void removeQueueContainerHead(Container *pContainer);
 void printQueueContainer(Container *pContainer);
-
+void *threadRun(void  *threadArg);
+void joinThreadList(ClientThreadList* pList);
+int generateRandomInRange(int pMin, int pMax);
 

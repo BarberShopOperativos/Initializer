@@ -35,6 +35,10 @@
 			<Option compilerVar="CC" />
 		</Unit>
 		<Unit filename="BarberShopStructures.h" />
+		<Unit filename="SemaphoreStruct.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="SemaphoreStruct.h" />
 		<Unit filename="main.c">
 			<Option compilerVar="CC" />
 		</Unit>
