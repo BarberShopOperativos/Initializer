@@ -4,8 +4,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/stat.h>
-#include "BarberShopStructures.h"
-#include "SemaphoreStruct.h"
+#include "ClientThread.h"
 
 #define INT_SEG_SIZE 5
 #define STRUCT_SEG_SIZE 10
