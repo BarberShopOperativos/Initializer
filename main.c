@@ -14,6 +14,7 @@ char BARBERS_SEM[] = "BarbersSem";
 char CASHIER_SEM[] = "CashierSem";
 char FILE_SEM[] = "FileSem";
 char S_CLIENTS_COUNTER_SEM[] = "SpecialClientsCounter";
+char FILE_HEADER[] = "--------------- Barber Shop Execution Log --------------- \n";
 
 
 int createSegment(key_t pKey, int pSegmentSize);
@@ -191,8 +192,13 @@ void initializeSemaphores()
     createSemaphore(CHAIRS_SEM);
     createSemaphore(BARBERS_SEM);
     createSemaphore(CASHIER_SEM);
-    createSemaphore(FILE_SEM);
     createSemaphore(S_CLIENTS_COUNTER_SEM);
+    Semaphore *fileSem = createSemaphore(FILE_SEM);
+
+    sem_wait(fileSem->mutex);
+    writeFile(FILE_HEADER);
+    sem_post(fileSem->mutex);
+
 
     printf("Semaforos creados exitosamente! \n");
 }
