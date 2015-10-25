@@ -41,7 +41,7 @@
 	<pthread.h>
 	<unistd.h>
 
-1445742255 source:/home/luiscruz/Documents/BarberShop/Initializer/main.c
+1445807732 source:/home/luiscruz/Documents/BarberShop/Initializer/main.c
 	<stdlib.h>
 	<stdio.h>
 	<sys/types.h>

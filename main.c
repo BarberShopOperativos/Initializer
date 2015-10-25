@@ -65,8 +65,8 @@ int main()
     scanf("%d", &barbersQuantity);
 
     // Create the neccessary segments
-    chairsShmID = createSegment(chairsKey,chairsQuantity * STRUCT_SEG_SIZE);
-    barbersShmID = createSegment(barbersKey,barbersQuantity * STRUCT_SEG_SIZE);
+    chairsShmID = createSegment(chairsKey,STRUCT_SEG_SIZE);
+    barbersShmID = createSegment(barbersKey,STRUCT_SEG_SIZE);
     cashiershmID = createSegment(cashierKey,STRUCT_SEG_SIZE);
     specialClientsCounterShmID = createSegment(specialClientsCounterKey,INT_SEG_SIZE);
     stopClientsShmID = createSegment(stopClientsKey,INT_SEG_SIZE);
