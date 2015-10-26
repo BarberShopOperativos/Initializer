@@ -4,7 +4,7 @@
 /// Method to delete and write on a specified file
 /// </summary>
 void writeFile(char *pText){
-    char *fileName = "output.txt";
+    char *fileName = "../output.txt";
     FILE *file = fopen(fileName, "w");
     if (file == NULL){
         printf("Error opening file!\n");
@@ -18,7 +18,7 @@ void writeFile(char *pText){
 /// Method to append text on a specified file
 /// </summary>
 void writeFileAppend(char *pText){
-    char *fileName = "output.txt";
+    char *fileName = "../output.txt";
     FILE *file = fopen(fileName, "a");
     if (file == NULL){
         printf("Error opening file!\n");

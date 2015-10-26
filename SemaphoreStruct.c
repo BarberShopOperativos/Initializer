@@ -17,7 +17,14 @@ Semaphore *createSemaphore (char *pName)
         exit(-1);
     }
 
-    printf("Semaforo %s creado... \n", pName);
+
+    //sem_destroy(semaphore->mutex);
+
+    // Just to unlock all the semaphores in use
+    sem_post(semaphore->mutex);
+
+
+    printf("Semafsoro %s creado... \n", pName);
 
     return semaphore;
 }
@@ -31,6 +38,7 @@ Semaphore *getSemaphore(char *pName)
     semaphore->name = pName;
 
     //create & initialize existing semaphore
+
     semaphore->mutex = sem_open(pName,0,0644,0);
     if(semaphore->mutex == SEM_FAILED)
     {

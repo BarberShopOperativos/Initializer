@@ -8,6 +8,7 @@
 
 #define INT_SEG_SIZE 5
 #define STRUCT_SEG_SIZE 10
+#define CASHIER_QUEUE_SIZE 100
 
 char CHAIRS_SEM[] = "ChairsSem";
 char BARBERS_SEM[] = "BarbersSem";
@@ -33,12 +34,16 @@ int main()
      // Declare values to store data in the segments
     int chairsShmID, barbersShmID, cashiershmID, specialClientsCounterShmID, stopClientsShmID, stopSpecialClientesShmID,
         chairsQuantityShmID, barbersQuantityShmID, nodeShmID,
-        chairsQuantity, barbersQuantity,
-        *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr, *chairsQuantityPtr, *barbersQuantityPtr;
-    Container *chairsQueue , *barbersList, *cashierQueue;
+        chairsQuantity, barbersQuantity, cashierQueueSize = 100,
+        *specialClientsCounterPtr, *stopClientesPtr, *stopSpecialClientsPtr, *chairsQuantityPtr, *barbersQuantityPtr, *cashierQueuePtr;
+
+    Container *chairsQueue , *barbersList;
     key_t chairsKey, barbersKey, cashierKey, specialClientsCounterKey, stopClientsKey,
         stopSpecialClientsKey,chairsQuantityKey,barbersQuantityKey,baseNodeKey;
     Node *actualNode;
+
+    int cashierQueue[CASHIER_QUEUE_SIZE];
+    cashierQueuePtr = cashierQueue;
 
     // Segment keys to be used
     chairsKey = 5677;
@@ -53,8 +58,6 @@ int main()
     // Initialize structures data
     chairsQueue = createContainer();
     barbersList = createContainer();
-    cashierQueue = createContainer();
-
 
     // Get the maximun amount of chairs
     printf("Ingrese la cantidad de sillas: ");
@@ -67,7 +70,7 @@ int main()
     // Create the neccessary segments
     chairsShmID = createSegment(chairsKey,STRUCT_SEG_SIZE);
     barbersShmID = createSegment(barbersKey,STRUCT_SEG_SIZE);
-    cashiershmID = createSegment(cashierKey,STRUCT_SEG_SIZE);
+    cashiershmID = createSegment(cashierKey,cashierQueueSize);
     specialClientsCounterShmID = createSegment(specialClientsCounterKey,INT_SEG_SIZE);
     stopClientsShmID = createSegment(stopClientsKey,INT_SEG_SIZE);
     stopSpecialClientesShmID = createSegment(stopSpecialClientsKey,INT_SEG_SIZE);
@@ -79,7 +82,7 @@ int main()
     // Attach the segment structures
     chairsQueue = attachContainerSegment(chairsShmID);
     barbersList = attachContainerSegment(barbersShmID);
-    cashierQueue = attachContainerSegment(cashiershmID);
+    cashierQueuePtr = attachIntSegment(cashiershmID);
     specialClientsCounterPtr = attachIntSegment(specialClientsCounterShmID);
     stopClientesPtr = attachIntSegment(stopClientsShmID);
     stopSpecialClientsPtr = attachIntSegment(stopSpecialClientesShmID);
@@ -93,7 +96,7 @@ int main()
     chairsQueue->maxLenght = chairsQuantity;
     barbersList->firstNode = barbersList->lastNode = NULL;
     barbersList->maxLenght = barbersQuantity;
-    cashierQueue->firstNode = cashierQueue->lastNode = NULL;
+    //cashierQueue->firstNode = cashierQueue->lastNode = NULL;
     *specialClientsCounterPtr = 0;
     *stopClientesPtr = 1;
     *stopSpecialClientsPtr = 1;
@@ -117,9 +120,9 @@ int main()
         baseNodeKey += 1;
         actualNode = addNodeToSharedListContainer(barbersList,barberIndex,baseNodeKey);
     }
+    clearCashierQueue(cashierQueuePtr,CASHIER_QUEUE_SIZE,0);
 
     printf("Structuras inicializadas... \n");
-
     printf("Recursos inicializados exitosamente! \n");
     exit(0);
     return 0;
@@ -251,6 +254,3 @@ Node *addNodeToSharedListContainer(Container *pContainer, int pId, key_t pKey)
     pContainer->length += 1;
     return node;
 }
-
-
-
