@@ -1,10 +1,6 @@
 #ifndef CLIENTTHREAD_H_INCLUDED
 #define CLIENTTHREAD_H_INCLUDED
 
-
-
-#endif // CLIENTTHREAD_H_INCLUDED
-
 #include "BarberShopStructures.h"
 #include "SemaphoreStruct.h"
 
@@ -61,3 +57,4 @@ ClientThread *createClient (
     Semaphore *pFileSem,
     Semaphore *pSClientsCounterSem);
 
+#endif // CLIENTTHREAD_H_INCLUDED

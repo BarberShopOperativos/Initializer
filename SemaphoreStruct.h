@@ -1,9 +1,9 @@
 #ifndef SEMAPHORESTRUCT_H_INCLUDED
 #define SEMAPHORESTRUCT_H_INCLUDED
-#endif // SEMAPHORESTRUCT_H_INCLUDED
+
 
 #include <sys/types.h>
-#include <sys/ipc.h>
+#include <sys/ipc.h>1
 #include <sys/shm.h>
 #include <stdio.h>
 #include <semaphore.h>
@@ -24,3 +24,6 @@ struct Semaphore
 
 Semaphore *createSemaphore (char *pName);
 Semaphore *getSemaphore(char *pName);
+
+#endif // SEMAPHORESTRUCT_H_INCLUDED
+
